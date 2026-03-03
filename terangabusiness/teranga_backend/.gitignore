@@ -22,3 +22,13 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+.env
+.env.example
+.editorconfig
+.php_cs.cache
+.php_cs.dist
+.php_cs.php
+.phpunit.xml
+.phpunit.xml.dist
+.phpunit.result.cache
+.phpactor.json
