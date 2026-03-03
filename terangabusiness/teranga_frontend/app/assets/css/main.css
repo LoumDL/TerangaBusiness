@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+  --color-navy-50: #eff6ff;
+  --color-navy-100: #dbeafe;
+  --color-navy-200: #bfdbfe;
+  --color-navy-300: #93c5fd;
+  --color-navy-400: #60a5fa;
+  --color-navy-500: #1e3a5f;
+  --color-navy-600: #1a3254;
+  --color-navy-700: #162a47;
+  --color-navy-800: #12213a;
+  --color-navy-900: #0d192d;
+
+  --color-teranga-50: #fef2f2;
+  --color-teranga-100: #fee2e2;
+  --color-teranga-200: #fecaca;
+  --color-teranga-300: #fca5a5;
+  --color-teranga-400: #f87171;
+  --color-teranga-500: #dc2626;
+  --color-teranga-600: #b91c1c;
+  --color-teranga-700: #991b1b;
+  --color-teranga-800: #7f1d1d;
+  --color-teranga-900: #450a0a;
+}
+
+@theme {
+  --font-family-sans: 'Inter', sans-serif;
+
+  --color-navy-50: #eff6ff;
+  --color-navy-100: #dbeafe;
+  --color-navy-200: #bfdbfe;
+  --color-navy-300: #93c5fd;
+  --color-navy-400: #60a5fa;
+  --color-navy-500: #1e3a5f;
+  --color-navy-600: #1a3254;
+  --color-navy-700: #162a47;
+  --color-navy-800: #12213a;
+  --color-navy-900: #0d192d;
+
+  --color-teranga-50: #fef2f2;
+  --color-teranga-100: #fee2e2;
+  --color-teranga-200: #fecaca;
+  --color-teranga-300: #fca5a5;
+  --color-teranga-400: #f87171;
+  --color-teranga-500: #dc2626;
+  --color-teranga-600: #b91c1c;
+  --color-teranga-700: #991b1b;
+  --color-teranga-800: #7f1d1d;
+  --color-teranga-900: #450a0a;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
