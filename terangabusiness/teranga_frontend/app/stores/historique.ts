@@ -55,5 +55,10 @@ export const useHistoriqueStore = defineStore('historique', {
       this.filterValue = null
       this.filteredTransactions = this.allTransactions
     },
+
+    removeTransaction(id: number) {
+      this.allTransactions = this.allTransactions.filter(t => t.id !== id)
+      this.filteredTransactions = this.filteredTransactions.filter(t => t.id !== id)
+    },
   },
 })

@@ -28,4 +28,15 @@ class HistoriqueController extends Controller
             'total'        => $transactions->count(),
         ]);
     }
+
+    public function destroy(Request $request, int $id): JsonResponse
+    {
+        $item = Historique::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        $item->delete();
+
+        return response()->json(['message' => 'Transaction supprimée.']);
+    }
 }

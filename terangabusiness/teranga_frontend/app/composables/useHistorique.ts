@@ -19,5 +19,10 @@ export const useHistorique = () => {
     }
   }
 
-  return { fetchHistorique }
+  const deleteTransaction = async (id: number): Promise<void> => {
+    await apiFetch(`/v1/historique/${id}`, { method: 'DELETE' })
+    store.removeTransaction(id)
+  }
+
+  return { fetchHistorique, deleteTransaction }
 }

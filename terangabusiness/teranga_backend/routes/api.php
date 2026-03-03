@@ -20,6 +20,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/cotisations', [CotisationController::class, 'index']);
         Route::get('/historique', [HistoriqueController::class, 'index']);
+        Route::delete('/historique/{id}', [HistoriqueController::class, 'destroy']);
         Route::post('/paiements', [PaiementController::class, 'store']);
         Route::get('/paiements/{id}', [PaiementController::class, 'show']);
     });
