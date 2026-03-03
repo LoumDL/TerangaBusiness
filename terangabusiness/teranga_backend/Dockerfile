@@ -11,7 +11,13 @@ WORKDIR /app
 
 COPY . .
 
+# Créer un .env minimal pour que les scripts composer (php artisan package:discover) fonctionnent
+RUN echo "APP_KEY=temp\nAPP_ENV=production" > .env
+
 RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Supprimer le .env temporaire (les vraies vars viennent de Render)
+RUN rm .env
 
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
     && chmod -R 777 storage bootstrap/cache
