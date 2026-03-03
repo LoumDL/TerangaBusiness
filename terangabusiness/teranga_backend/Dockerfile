@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . .
 
 # Créer un .env minimal pour que les scripts composer (php artisan package:discover) fonctionnent
-RUN echo "APP_KEY=temp\nAPP_ENV=production" > .env
+RUN printf "APP_KEY=temp\nAPP_ENV=production\n" > .env
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
