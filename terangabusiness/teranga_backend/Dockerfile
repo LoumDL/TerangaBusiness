@@ -2,7 +2,7 @@ FROM php:8.2-cli
 
 # Dépendances système
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpng-dev libonig-dev libxml2-dev \
+    git curl zip unzip libpng-dev libonig-dev libxml2-dev ca-certificates \
     && docker-php-ext-install pdo_mysql mbstring opcache \
     && rm -rf /var/lib/apt/lists/*
 
