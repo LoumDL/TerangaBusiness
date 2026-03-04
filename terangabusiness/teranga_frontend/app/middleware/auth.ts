@@ -2,11 +2,7 @@ import { useAuthStore } from '~/stores/auth'
 
 export default defineNuxtRouteMiddleware((to) => {
   const authStore = useAuthStore()
-
-  // Load token from localStorage on client
-  if (import.meta.client) {
-    authStore.loadFromStorage()
-  }
+  authStore.loadFromStorage()
 
   const publicRoutes = ['/login', '/register']
 
