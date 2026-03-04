@@ -6,8 +6,8 @@
         <NuxtLink to="/dashboard" class="flex items-center space-x-3 hover:opacity-90 transition-opacity">
           <img src="/logo.jpeg" alt="Teranga Business Hub" class="h-10 w-10 rounded-full object-cover ring-2 ring-white/30" />
           <div class="hidden sm:block">
-            <span class="font-bold text-lg leading-tight">Teranga</span>
-            <span class="text-teranga-300 font-semibold text-lg"> Business Hub</span>
+            <span class="font-bold text-lg leading-tight">TERANGA</span>
+            <span class="text-teranga-300 font-semibold text-lg">HUBS</span>
           </div>
         </NuxtLink>
 
