@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . .
 
 # .env temporaire pour que php artisan package:discover fonctionne pendant le build
-RUN printf "APP_KEY=temp\nAPP_ENV=production\n" > .env
+RUN printf "APP_NAME=Teranga\nAPP_ENV=local\nAPP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\nAPP_DEBUG=false\nDB_CONNECTION=sqlite\n" > .env
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
