@@ -31,4 +31,4 @@ Thumbs.db
 .phpunit.xml
 .phpunit.xml.dist
 .phpunit.result.cache
-.phpactor.json
+.phpactor.jsonrender_var.md
