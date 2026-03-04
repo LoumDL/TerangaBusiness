@@ -6,7 +6,7 @@
         <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-xl mb-4 overflow-hidden">
           <img src="/logo.jpeg" alt="Teranga Business Hub" class="w-full h-full object-cover" />
         </div>
-        <h1 class="text-2xl font-bold text-white">Teranga Business Hub</h1>
+        <h1 class="text-2xl font-bold text-white">TERANGA HUBS</h1>
         <p class="text-gray-300 text-sm mt-1">Finance Solidaire</p>
       </div>
 
