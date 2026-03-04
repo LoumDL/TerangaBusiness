@@ -7,7 +7,7 @@
           <img src="/logo.jpeg" alt="Teranga Business Hub" class="w-full h-full object-cover" />
         </div>
         <h1 class="text-2xl font-bold text-white">Teranga Business Hub</h1>
-        <p class="text-gray-300 text-sm mt-1">Finance Solidaire • Tontine Digitale</p>
+        <p class="text-gray-300 text-sm mt-1">Finance Solidaire</p>
       </div>
 
       <!-- Form card -->
