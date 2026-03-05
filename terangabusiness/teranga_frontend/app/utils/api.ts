@@ -34,11 +34,15 @@ export const useApi = () => {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Erreur inconnue' }))
+      const error = await response.json().catch(() => ({ message: `Erreur serveur (${response.status})` }))
       throw new Error(error.message || `Erreur ${response.status}`)
     }
 
-    return response.json() as Promise<T>
+    try {
+      return await response.json() as T
+    } catch {
+      throw new Error('Réponse invalide du serveur. Veuillez réessayer.')
+    }
   }
 
   return { apiFetch }

@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   ssr: false,
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   modules: [
     '@pinia/nuxt',
@@ -23,10 +23,6 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'Plateforme fintech de finance solidaire - Teranga Business Hub' },
       ],
-      link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' },
-      ],
     },
   },
 
@@ -34,5 +30,9 @@ export default defineNuxtConfig({
 
   typescript: {
     strict: true,
+  },
+
+  experimental: {
+    payloadExtraction: false,
   },
 })

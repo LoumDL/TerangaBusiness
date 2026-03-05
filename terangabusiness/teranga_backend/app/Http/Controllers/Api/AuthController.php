@@ -43,7 +43,8 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user->tokens()->delete();
+        // Supprime les anciens tokens de ce user (nettoyage, non bloquant)
+        $user->tokens()->where('name', 'auth_token')->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
