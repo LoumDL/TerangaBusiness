@@ -1,19 +1,18 @@
 import { usePaiementStore } from '~/stores/paiement'
-import { useHistoriqueStore } from '~/stores/historique'
 import { useAuthStore } from '~/stores/auth'
-import type { PaiementResponse, Transaction } from '~/types'
+import type { PaiementInitResponse, PaiementStatusResponse } from '~/types'
 
 export const usePaiement = () => {
   const store = usePaiementStore()
-  const historiqueStore = useHistoriqueStore()
   const authStore = useAuthStore()
   const config = useRuntimeConfig()
 
   const initierPaiement = async (
     description: string,
     montant: number,
-    justificatif: File
-  ): Promise<PaiementResponse> => {
+    channel: string,
+    justificatif?: File | null,
+  ): Promise<PaiementInitResponse> => {
     store.setLoading(true)
     store.error = null
 
@@ -21,7 +20,10 @@ export const usePaiement = () => {
       const formData = new FormData()
       formData.append('description', description)
       formData.append('montant', String(montant))
-      formData.append('justificatif', justificatif)
+      formData.append('channel', channel)
+      if (justificatif) {
+        formData.append('justificatif', justificatif)
+      }
 
       const response = await fetch(`${config.public.apiBase}/api/v1/paiements`, {
         method: 'POST',
@@ -37,31 +39,47 @@ export const usePaiement = () => {
         throw new Error(error.message || `Erreur ${response.status}`)
       }
 
-      const data = (await response.json()) as PaiementResponse
-      store.setResult(data.paiement, data.message)
-
-      // Ajouter à l'historique local
-      const newTransaction: Transaction = {
-        id: data.paiement.id,
-        type: 'PAIEMENT',
-        description: data.paiement.description,
-        montant: data.paiement.montant,
-        statut: data.paiement.statut,
-        date: data.paiement.created_at,
-      }
-      historiqueStore.allTransactions = [newTransaction, ...historiqueStore.allTransactions]
-      if (!historiqueStore.activeFilter) {
-        historiqueStore.filteredTransactions = [newTransaction, ...historiqueStore.filteredTransactions]
-      }
-
+      const data = await response.json() as PaiementInitResponse
+      store.setPending(data.paiement_id, data.checkout_url)
       return data
     } catch (err) {
-      store.error = err instanceof Error ? err.message : 'Erreur lors du paiement.'
+      store.error = err instanceof Error ? err.message : 'Erreur lors de l\'initialisation du paiement.'
       throw err
     } finally {
       store.setLoading(false)
     }
   }
 
-  return { initierPaiement }
+  const pollStatus = async (
+    paiementId: number,
+    maxAttempts = 20,
+    intervalMs = 3000,
+  ): Promise<PaiementStatusResponse> => {
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise(resolve => setTimeout(resolve, intervalMs))
+
+      const response = await fetch(`${config.public.apiBase}/api/v1/paiements/${paiementId}/status`, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+          Accept: 'application/json',
+        },
+      })
+
+      if (!response.ok) continue
+
+      const data = await response.json() as PaiementStatusResponse
+
+      if (data.statut !== 'EN_ATTENTE') {
+        store.setResult(data.statut, paiementId)
+        return data
+      }
+    }
+
+    // Timeout : retourner EN_ATTENTE après maxAttempts
+    const timeout: PaiementStatusResponse = { statut: 'EN_ATTENTE', checkout_url: null }
+    store.setResult('EN_ATTENTE', paiementId)
+    return timeout
+  }
+
+  return { initierPaiement, pollStatus }
 }

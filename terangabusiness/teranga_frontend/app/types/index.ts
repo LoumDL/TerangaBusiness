@@ -29,10 +29,15 @@ export interface Paiement {
   created_at: string
 }
 
-export interface PaiementResponse {
-  paiement: Paiement
+export interface PaiementInitResponse {
+  paiement_id: number
+  checkout_url: string
   message: string
-  ref: string
+}
+
+export interface PaiementStatusResponse {
+  statut: StatutEnum
+  checkout_url: string | null
 }
 
 export type TypeTransaction = 'COTISATION' | 'PAIEMENT'

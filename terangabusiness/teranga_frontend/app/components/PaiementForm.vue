@@ -2,35 +2,24 @@
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
     <h2 class="text-lg font-semibold text-gray-900 flex items-center mb-6">
       <span class="mr-2">💳</span>
-      Initier un Paiement
+      Payer avec PayDunya
     </h2>
 
-    <!-- Result banner -->
+    <!-- Redirection en cours -->
     <Transition name="slide-down">
-      <div v-if="result" class="mb-6 p-4 rounded-xl border" :class="resultClass">
-        <div class="flex items-start space-x-3">
-          <span class="text-xl flex-shrink-0">{{ resultIcon }}</span>
-          <div>
-            <p class="font-semibold text-sm">{{ resultTitle }}</p>
-            <p class="text-sm mt-0.5 opacity-80">{{ paiementStore.lastMessage }}</p>
-            <p class="text-xs mt-1 font-mono opacity-60">
-              Référence: {{ result.id }}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center justify-between mt-3 pt-3 border-t border-current/10">
-          <div class="flex items-center space-x-2">
-            <span class="text-sm font-semibold">{{ formatMontantFCFA(result.montant) }}</span>
-            <CotisationBadge :statut="result.statut" />
-          </div>
-          <button @click="paiementStore.clearResult()" class="text-xs underline opacity-60 hover:opacity-100">
-            Nouveau paiement
-          </button>
-        </div>
+      <div v-if="redirecting" class="flex flex-col items-center justify-center py-10 space-y-4">
+        <div class="w-12 h-12 border-4 border-navy-200 border-t-navy-500 rounded-full animate-spin" />
+        <p class="text-sm font-medium text-gray-700">Redirection vers PayDunya…</p>
+        <p class="text-xs text-gray-400">Vous allez être redirigé vers la page de paiement sécurisée.</p>
       </div>
     </Transition>
 
-    <form v-if="!result" @submit.prevent="handleSubmit" class="space-y-5">
+    <!-- Erreur -->
+    <div v-if="store.error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+      ⚠️ {{ store.error }}
+    </div>
+
+    <form v-if="!redirecting" @submit.prevent="handleSubmit" class="space-y-5">
       <!-- Description -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1.5">
@@ -68,23 +57,65 @@
         </p>
       </div>
 
-      <!-- Justificatif -->
+      <!-- Méthode de paiement -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Méthode de paiement <span class="text-red-500">*</span>
+        </label>
+        <div class="grid grid-cols-3 gap-3">
+          <button
+            v-for="method in paymentMethods"
+            :key="method.value"
+            type="button"
+            @click="form.channel = method.value"
+            class="relative flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer"
+            :class="form.channel === method.value
+              ? 'border-navy-500 bg-navy-50 shadow-sm'
+              : 'border-gray-200 hover:border-gray-300 bg-white'"
+          >
+            <span class="text-2xl mb-1">{{ method.icon }}</span>
+            <span class="text-xs font-medium" :class="form.channel === method.value ? 'text-navy-700' : 'text-gray-600'">
+              {{ method.label }}
+            </span>
+            <!-- Checkmark sélectionné -->
+            <div
+              v-if="form.channel === method.value"
+              class="absolute top-1.5 right-1.5 w-4 h-4 bg-navy-500 rounded-full flex items-center justify-center"
+            >
+              <svg class="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          </button>
+        </div>
+        <p v-if="errors.channel" class="mt-1 text-xs text-red-600">{{ errors.channel }}</p>
+      </div>
+
+      <!-- Justificatif optionnel -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1.5">
-          Justificatif <span class="text-red-500">*</span>
+          Justificatif <span class="text-xs text-gray-400 font-normal">(optionnel)</span>
         </label>
         <FileUpload @update:file="form.justificatif = $event" />
-        <p v-if="errors.justificatif" class="mt-1 text-xs text-red-600">{{ errors.justificatif }}</p>
+      </div>
+
+      <!-- Résumé avant paiement -->
+      <div v-if="form.montant > 0 && form.channel" class="p-3 bg-navy-50 border border-navy-100 rounded-xl text-sm">
+        <p class="text-navy-700 font-medium text-xs mb-1">Récapitulatif</p>
+        <div class="flex justify-between items-center">
+          <span class="text-navy-600 text-xs">{{ selectedMethod?.label }}</span>
+          <span class="font-bold text-navy-800">{{ formatMontantFCFA(form.montant) }}</span>
+        </div>
       </div>
 
       <!-- Submit -->
       <button
         type="submit"
         :disabled="isLoading"
-        class="w-full py-3 px-6 bg-navy-500 hover:bg-navy-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
+        class="w-full py-3 px-6 bg-teranga-500 hover:bg-teranga-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
       >
         <span v-if="isLoading" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-        <span>{{ isLoading ? 'Traitement en cours…' : 'Envoyer le paiement' }}</span>
+        <span>{{ isLoading ? 'Initialisation…' : `Payer ${form.montant > 0 ? formatMontantFCFA(form.montant) : ''} →` }}</span>
       </button>
     </form>
   </div>
@@ -95,47 +126,39 @@ import { usePaiementStore } from '~/stores/paiement'
 import { usePaiement } from '~/composables/usePaiement'
 import { useFormatCurrency } from '~/composables/useFormatCurrency'
 
-const paiementStore = usePaiementStore()
+const store = usePaiementStore()
 const { initierPaiement } = usePaiement()
 const { formatMontantFCFA } = useFormatCurrency()
+
+const redirecting = ref(false)
+
+const paymentMethods = [
+  { value: 'wave',   label: 'Wave',         icon: '🌊' },
+  { value: 'orange', label: 'Orange Money', icon: '🟠' },
+  { value: 'card',   label: 'Carte',        icon: '💳' },
+]
 
 const form = reactive({
   description: '',
   montant: 0,
+  channel: '' as 'wave' | 'orange' | 'card' | '',
   justificatif: null as File | null,
 })
 
 const errors = reactive({
   description: '',
   montant: '',
-  justificatif: '',
+  channel: '',
 })
 
-const isLoading = computed(() => paiementStore.isLoading)
-const result = computed(() => paiementStore.lastResult)
-
-const resultClass = computed(() => {
-  if (!result.value) return ''
-  return result.value.statut === 'VALIDÉ'
-    ? 'bg-green-50 border-green-200 text-green-800'
-    : 'bg-red-50 border-red-200 text-red-800'
-})
-
-const resultIcon = computed(() => {
-  if (!result.value) return ''
-  return result.value.statut === 'VALIDÉ' ? '✅' : '❌'
-})
-
-const resultTitle = computed(() => {
-  if (!result.value) return ''
-  return result.value.statut === 'VALIDÉ' ? 'Paiement validé avec succès !' : 'Paiement rejeté'
-})
+const isLoading = computed(() => store.isLoading)
+const selectedMethod = computed(() => paymentMethods.find(m => m.value === form.channel))
 
 const validate = (): boolean => {
-  let valid = true
   errors.description = ''
   errors.montant = ''
-  errors.justificatif = ''
+  errors.channel = ''
+  let valid = true
 
   if (!form.description.trim()) {
     errors.description = 'La description est obligatoire.'
@@ -145,23 +168,47 @@ const validate = (): boolean => {
     errors.montant = 'Le montant doit être supérieur à 0.'
     valid = false
   }
-  if (!form.justificatif) {
-    errors.justificatif = 'Le justificatif est obligatoire.'
+  if (!form.channel) {
+    errors.channel = 'Veuillez choisir une méthode de paiement.'
     valid = false
   }
   return valid
 }
 
+const router = useRouter()
+
 const handleSubmit = async () => {
   if (!validate()) return
 
   try {
-    await initierPaiement(form.description, form.montant, form.justificatif!)
-    form.description = ''
-    form.montant = 0
-    form.justificatif = null
+    const data = await initierPaiement(
+      form.description,
+      form.montant,
+      form.channel,
+      form.justificatif,
+    )
+
+    const query = {
+      paiement_id: String(data.paiement_id),
+      montant: String(form.montant),
+      description: form.description,
+    }
+
+    // Wave et Orange → page custom dans l'app (saisie numéro + push USSD)
+    if (form.channel === 'wave') {
+      router.push({ path: '/paiement-wave', query })
+      return
+    }
+    if (form.channel === 'orange') {
+      router.push({ path: '/paiement-orange', query })
+      return
+    }
+
+    // Carte bancaire → redirection PayDunya
+    redirecting.value = true
+    setTimeout(() => { window.location.href = data.checkout_url }, 1500)
   } catch {
-    // errors are handled in the store
+    // error shown from store
   }
 }
 </script>
