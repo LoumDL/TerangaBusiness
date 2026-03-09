@@ -16,6 +16,8 @@ class Paiement extends Model
         'description',
         'montant',
         'statut',
+        'paydunya_token',
+        'checkout_url',
     ];
 
     protected $casts = [

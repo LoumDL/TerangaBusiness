@@ -15,8 +15,9 @@ class PaiementRequest extends FormRequest
     {
         return [
             'description'   => ['required', 'string', 'max:255'],
-            'montant'        => ['required', 'numeric', 'min:1'],
-            'justificatif'   => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'montant'       => ['required', 'numeric', 'min:1'],
+            'channel'       => ['nullable', 'string', 'in:wave,orange,card'],
+            'justificatif'  => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
     }
 

@@ -6,17 +6,34 @@ use App\Interfaces\PaymentGateway;
 
 class MockPaymentService implements PaymentGateway
 {
-    public function validate(array $payload): array
+    public function initiate(array $payload): array
     {
-        usleep(800000); // délai simulé 800ms
+        $token = 'MOCK-' . strtoupper(substr(md5(uniqid()), 0, 12));
+
+        return [
+            'token'        => $token,
+            'checkout_url' => url("/api/v1/paiements/mock-checkout/{$token}"),
+        ];
+    }
+
+    public function directCharge(string $token, string $phone, string $provider): array
+    {
+        usleep(500000); // 500ms simulé
+        return [
+            'statut'  => 'EN_ATTENTE',
+            'message' => 'Push USSD simulé envoyé au ' . $phone . '. Validez sur votre téléphone.',
+        ];
+    }
+
+    public function verify(string $token): array
+    {
+        usleep(300000); // 300ms simulé
         $success = rand(1, 10) <= 7; // 70% succès
 
         return [
             'statut'  => $success ? 'VALIDÉ' : 'REJETÉ',
-            'message' => $success
-                ? 'Paiement approuvé.'
-                : "Paiement refusé par l'opérateur.",
-            'ref'     => 'MOCK-' . strtoupper(substr(md5(uniqid()), 0, 8)),
+            'ref'     => $token,
+            'message' => $success ? 'Paiement simulé approuvé.' : 'Paiement simulé refusé.',
         ];
     }
 }
